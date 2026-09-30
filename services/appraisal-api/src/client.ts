@@ -16,6 +16,7 @@ import {
   assertAppraisalBodyBytes,
   MAX_APPRAISAL_BODY_BYTES,
 } from "./appraisal.js";
+import { normalizeError } from "@sub-rosa/logging/errors";
 
 export interface PaidClientConfig {
   /** Payer secret key (S...). Needs a USDC trustline + balance. */
@@ -142,7 +143,7 @@ export function assertPaidRequestBodyAllowed(
   try {
     assertAppraisalBodyBytes(text);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    const msg = normalizeError(e).message;
     if (/empty/.test(msg)) {
       if (!requireBody && text.trim().length === 0) {
         // Probe (unpaid) path tolerates empty to preserve 402 negotiation;
